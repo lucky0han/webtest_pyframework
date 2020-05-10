@@ -54,10 +54,11 @@ def pytest_runtest_makereport(item, call):
                 browser = item.cls.BROWSER_MANAGER.get_current_browser()
             except NoOpenBrowser:
                 browser = None
-            print("conftest:", browser)
             capturer = Screenshot()
+            # folder_name = settings.SCREENSHOTS_DIR + os.sep + report.description
             folder_name = report.description
             ss_result, ss_path = capturer(browser, folder_name)
+            print(ss_path)
             if settings.ATTACH_SCREENSHOT_TO_HTML_REPORT:
                 template = """<div><img src="data:image/png;base64,%s" alt="screenshot" style="width:600px;height:300px;" onclick="window.open(this.src)" align="right"/></div>"""
                 html = template % Screenshot.screenshot_file_to_base64(ss_path) if ss_result else """<div>截图失败</div>"""

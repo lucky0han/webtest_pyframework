@@ -35,7 +35,7 @@ HTML_REPORT_FILE_PATH                   = os.path.join(REPORT_DIR, HTML_REPORT_N
 #python __init__.py file name
 PY_INIT_FILE_NAME                       = "__init__.py"
 
-#是否把报告添加到HTML报告上
+#是否把截图添加到HTML报告上
 ATTACH_SCREENSHOT_TO_HTML_REPORT        = True
 
 #执行测试的pytest命令
