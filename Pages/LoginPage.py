@@ -1,4 +1,7 @@
+# -*- coding:utf-8 -*-
+
 from Base.BasePage import BasePage
+from Pages.LoginPageXpathElement import *
 
 
 class LoginPage(BasePage):
@@ -7,24 +10,22 @@ class LoginPage(BasePage):
 
         @property
         def name_box(self):
-            """用户名输入框"""
-            xpath = '//input[@id="kw"]'
-            return self.page.find_element_by_xpath(xpath)
+            """搜索输入框"""
+            return self.page.find_element_by_xpath(search_content)
 
         @property
         def search_btn(self):
-            """用户名输入框"""
-            xpath = '//input[@id="su"]'
-            return self.page.find_element_by_xpath(xpath)
+            """搜索按钮"""
+            return self.page.find_element_by_xpath(search_btn)
 
     class Actions(BasePage.Actions):
         def name(self, name):
-            """输入用户名"""
+            """输入内容"""
             self.page.elements.name_box.clear()
             self.page.elements.name_box.send_keys(name)
             return self
 
         def search(self):
-            """点击登录按钮"""
+            """点击搜索按钮"""
             self.page.elements.search_btn.click()
             return self
