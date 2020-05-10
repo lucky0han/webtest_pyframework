@@ -2,7 +2,7 @@
 
 """
 登录页面测试示例
-@author siwenwei
+@author hanfeng
 """
 import pytest
 
@@ -19,15 +19,13 @@ class LoginPageTest(BaseCase):
         
         pass    
     
-    @pytest.mark.testcase("成功登陆测试", author="hanfeng", editor="")
+    @pytest.mark.testcase("success search", author="hanfeng", editor="")
     def test_successfully_login(self, testdata):
-        print('testdata', testdata)
         name    = testdata.get("搜索内容")
         url     = testdata.get("登录页面URL")
 
         page = LoginPage()
         page.open_url(url).actions.name(name).sleep(2).search().sleep(3)
-        page.screenshot("successfully_login")
         page.sleep(3)
         
     def teardown_method(self):
