@@ -1,5 +1,5 @@
 import pytest
-import setting
+import settings
 
 
 class TestRunner(object):
@@ -21,4 +21,4 @@ class TestRunner(object):
 
 
 if __name__ == "__main__":
-    TestRunner().run(setting.PYTEST_COMMANDS)
+    TestRunner().run(settings.PYTEST_COMMANDS)

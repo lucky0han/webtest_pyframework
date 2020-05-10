@@ -34,6 +34,7 @@ class TestDataReader(object):
 
     def data_deal(self, params, data_list):
         """获取有效数据，去除参数名为空的项"""
+        testDatas = []
         while True:
             if params[-1] == '':
                 params.pop()
@@ -42,15 +43,20 @@ class TestDataReader(object):
         params_valid_length = len(params)
         data_valid_list = []
         for data in data_list:
+            testData = {}
             while True:
                 if len(data) > params_valid_length:
                     data.pop()
                 elif len(data) == params_valid_length:
-                    data_valid_list.append(data)
+                    # data_valid_list.append(data)
                     break
                 else:
                     raise ValueError("Param length is different from value length")
-        return params, data_valid_list
+            for index, param in enumerate(params):
+                testData.update({param: data[index]})
+            testDatas.append(testData)
+        # return params, data_valid_list
+        return testDatas
 
     def get_data(self, target_name):
         """根据给定的测试用例名称获取数据"""
@@ -83,7 +89,10 @@ class TestDataReader(object):
                 else:
                     continue
             self.check_data(params, data_list)
-            params, data_list = self.data_deal(params, data_list)
-            return params, data_list
+            # params, data_list = self.data_deal(params, data_list)
+            testDatas = self.data_deal(params, data_list)
+            # print("params:", params)
+            # print("testDatas:", testDatas)
+            return testDatas
         else:
             raise AssertionError("Please check data file path")

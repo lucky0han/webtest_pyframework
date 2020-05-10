@@ -7,18 +7,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from Base.DriverManager import BrowserManager
 from Utils import Screenshot
 import time
-import setting
+import settings
+import configparser
 
 
 class BasePage(object):
-    screenshot_folder_path = setting.SCREENSHOTS_DIR
+    screenshot_folder_path = settings.SCREENSHOTS_DIR
     driver_manager = BrowserManager()
     _screenshot = Screenshot()
     timeout = 0
 
     def __init__(self):
-        self._driver = self.driver_manager.get_current_browser()
-        self._wait = WebDriverWait(self._driver, self.conf.get('driver', 'wait_time'))
+        self.conf = configparser.ConfigParser()
+        self.conf.read(BrowserManager.config_file_path)
+        self.__driver = self.driver_manager.get_current_browser()
+        self._wait = WebDriverWait(self.__driver, float(self.conf.get('driver', 'wait_time')))
         self.elements = self.Elements(self)
         self.actions = self.Actions(self)
 
@@ -31,22 +34,27 @@ class BasePage(object):
         return isinstance(timeout, (int, float))
 
     def switch_browser(self, index):
-        self._driver = self.driver_manager.switch_browser(index)
+        self.__driver = self.driver_manager.switch_browser(index)
+
+    def open_url(self, url):
+        """打开指定的url"""
+        self.__driver.get(url)
+        return self
 
     def find_element_by_xpath(self, locator):
         self._wait.until(EC.presence_of_element_located((By.XPATH, locator)))
-        return self._driver.find_element_by_xpath(locator)
+        return self.__driver.find_element_by_xpath(locator)
 
     def execute_javascript(self, script_cmd, *args):
         """执行javascript脚本"""
-        self._driver.execute_script(script_cmd, *args)
+        self.__driver.execute_script(script_cmd, *args)
 
     def click_xpath_by_javascript(self, xpath):
         """通过JavaScript向input元素输入文本"""
         js = "Elements = document.evaluate('{}', document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);" \
              "item = Elements.snapshotItem(0);" \
              "item.click()".format(xpath)
-        self._driver.execute_script(js)
+        self.__driver.execute_script(js)
 
     def is_element_enabled(self, element):
         """判断元素是否可用"""
@@ -69,7 +77,7 @@ class BasePage(object):
         if parent and self._is_webelement(parent):
             driver = parent.parent
         else:
-            driver = self._driver
+            driver = self.__driver
         message = "{} with locator '{}' not found.".format(by, locator)
         try:
             elements = WebDriverWait(driver, timeout).until(lambda x: x.find_elements(by, locator))
@@ -88,8 +96,12 @@ class BasePage(object):
         else:
             return elements
 
-    def screenshot(self):
-        self._screenshot(self._driver, self.screenshot_folder_path)
+    def screenshot(self, img_name):
+        img_path = self.screenshot_folder_path + img_name
+        self._screenshot(self.__driver, img_path)
+
+    def sleep(self, seconds):
+        time.sleep(seconds)
 
     class Elements(object):
 

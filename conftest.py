@@ -4,7 +4,7 @@ import os
 from Expection import NoOpenBrowser
 import pytest
 from py._xmlgen import html
-import setting
+import settings
 from datetime import datetime
 from Utils import TestDataReader
 from Utils import Screenshot
@@ -51,29 +51,30 @@ def pytest_runtest_makereport(item, call):
         xfail = hasattr(report, "wasxfail")
         if (report.skipped and xfail) or (report.failed and not xfail):
             try:
-                browser = item.cls.BROWSER_MANAGER.browser
+                browser = item.cls.BROWSER_MANAGER.get_current_browser()
             except NoOpenBrowser:
                 browser = None
+            print("conftest:", browser)
             capturer = Screenshot()
-            file_name = report.description + ".png"
-            ss_result, ss_path = capturer(browser, file_name)
-            if setting.ATTACH_SCREENSHOT_TO_HTML_REPORT:
+            folder_name = report.description
+            ss_result, ss_path = capturer(browser, folder_name)
+            if settings.ATTACH_SCREENSHOT_TO_HTML_REPORT:
                 template = """<div><img src="data:image/png;base64,%s" alt="screenshot" style="width:600px;height:300px;" onclick="window.open(this.src)" align="right"/></div>"""
                 html = template % Screenshot.screenshot_file_to_base64(ss_path) if ss_result else """<div>截图失败</div>"""
                 extra.append(pytest_html.extras.html(html))
-
     report.extra = extra
 
 
 def pytest_generate_tests(metafunc):
     for marker in metafunc.definition.iter_markers():
-        if marker.name == setting.TESTCASE_MARKER_NAME:
+        if marker.name == settings.TESTCASE_MARKER_NAME:
             metafunc.function.__doc__ = "".join(marker.args)
             break
     test_class_name = metafunc.cls.__name__
     test_method_name = metafunc.function.__name__
-    testdata_file_path = os.path.join(setting.TEST_DATA_EXCEL_DIR, test_class_name + ".xlsx")
-
+    testdata_file_path = os.path.join(settings.TEST_DATA_EXCEL_DIR, test_class_name + ".xlsx")
+    # print('TEST_DATA_EXCEL_DIR', settings.TEST_DATA_EXCEL_DIR)
+    # print(testdata_file_path)
     this_case_datas = TestDataReader(testdata_file_path).get_data(test_method_name)
 
     argnames = metafunc.definition._fixtureinfo.argnames

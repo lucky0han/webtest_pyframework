@@ -4,15 +4,16 @@ import os
 import pyautogui
 from selenium import webdriver
 import time
+import settings
 
 
 class Screenshot(object):
 
     def __call__(self, driver, save_folder_path, image_name=None):
-        self._save_folder_path = save_folder_path
+        self._save_folder_path = settings.SCREENSHOTS_DIR + os.sep + save_folder_path
         if image_name is None:
             self._image_name = "{}.png".format(time.strftime('%Y%m%d%H%M%S'))
-        self._image_path = save_folder_path + os.sep + self._image_name
+        self._image_path = self._save_folder_path + os.sep + self._image_name
         self._driver = driver
         result = self.browser_screenshot()
         return result, self._image_path
