@@ -1,17 +1,30 @@
+import random
+import re
+
+import chardet
+
+
 class A(object):
     def __init__(self):
-        self.l1 = []
+        self.i = 2
 
 
-class B(object):
-    a = A()
+def check(s) -> bool:
+    s = s.lower()
+    s = re.findall(r"[0-9]|[a-z]|[A-Z]", s)
+    num = len(s)
+    half_num = int(num / 2)
 
-    def __init__(self):
-        self.a.l1.append(1)
+    for i in range(half_num):
+        if s[i] == s[num - i - 1]:
+            continue
+        else:
+            return False
+    return True
+
 
 
 if __name__ == '__main__':
-    b1 = B()
-    b2 = B()
-    b3 = B()
-    print(b2.a.l1)
+
+    i = [0] * 10
+    print(i)

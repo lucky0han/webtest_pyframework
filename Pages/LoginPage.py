@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
-from Base.BasePage import BasePage
-from Pages.LoginPageXpathElement import *
+from base.basepage import BasePage
+from pages.LoginPageXpathElement import *
 
 
 class LoginPage(BasePage):

@@ -2,6 +2,9 @@
 import xlrd
 
 class TestDataReader(object):
+    TEST_NAME = ('Test Name', '测试用例名称')
+    TEST_DATA_TITLE = ('Test Data Title', '测试数据标题，以测试用例函数名开头')
+    TEST_DATA = ('Test Data', '测试数据')
 
     def __init__(self, file_path):
         self.book = xlrd.open_workbook(file_path)
@@ -15,9 +18,9 @@ class TestDataReader(object):
         else:
             return None
 
-    def check_data(self,  params, data_list):
+    def check_data(self,  param_list, data_list):
         """数据校验"""
-        params_length = len(params)
+        params_length = len(param_list)
         data_list_length = len(data_list)
 
         if params_length == 0:
@@ -32,15 +35,15 @@ class TestDataReader(object):
                 else:
                     raise ValueError("Params List Length Not Match")
 
-    def data_deal(self, params, data_list):
+    def list_to_dict(self, param_list, data_list):
         """获取有效数据，去除参数名为空的项"""
-        testDatas = []
+        testdatas = []
         while True:
-            if params[-1] == '':
-                params.pop()
+            if param_list[-1] == '':
+                param_list.pop()
             else:
                 break
-        params_valid_length = len(params)
+        params_valid_length = len(param_list)
         data_valid_list = []
         for data in data_list:
             testData = {}
@@ -48,27 +51,28 @@ class TestDataReader(object):
                 if len(data) > params_valid_length:
                     data.pop()
                 elif len(data) == params_valid_length:
-                    # data_valid_list.append(data)
+                    # data_valid_list.append(testdata)
                     break
                 else:
                     raise ValueError("Param length is different from value length")
-            for index, param in enumerate(params):
+            for index, param in enumerate(param_list):
                 testData.update({param: data[index]})
-            testDatas.append(testData)
+            testdatas.append(testData)
         # return params, data_valid_list
-        return testDatas
+        return testdatas
 
-    def get_data(self, target_name):
+    def get_data(self, case_function_name):
         """根据给定的测试用例名称获取数据"""
         data_list = []
-        params = []
+        params_list = []
         row_sum = self.get_rows()
         if row_sum:
             for index in range(row_sum):
-                if self.sheet.cell_value(index, 1) == target_name:
+                if self.sheet.cell_value(index, 0) == self.TEST_NAME[0] and \
+                        self.sheet.cell_value(index, 1) == case_function_name:
                     param_row_value = self.sheet.row_values(index + 1)
-                    if param_row_value[0] == 'Test Data Title':
-                        params = param_row_value[1:]
+                    if param_row_value[0] == self.TEST_DATA_TITLE[0]:
+                        params_list = param_row_value[1:]
                     else:
                         raise ValueError("Excel format error")
 
@@ -78,7 +82,7 @@ class TestDataReader(object):
                         # print("row_num:{}".format(row_num))
                         if row_num < row_sum:
                             row_value = self.sheet.row_values(row_num)
-                            if row_value[0] == 'Test Data':
+                            if row_value[0] == self.TEST_DATA[0]:
                                 # print(row_value)
                                 data = row_value[1:]
                                 data_list.append(data)
@@ -88,11 +92,11 @@ class TestDataReader(object):
                             break
                 else:
                     continue
-            self.check_data(params, data_list)
+            self.check_data(params_list, data_list)
             # params, data_list = self.data_deal(params, data_list)
-            testDatas = self.data_deal(params, data_list)
+            testDatas = self.list_to_dict(params_list, data_list)
             # print("params:", params)
             # print("testDatas:", testDatas)
             return testDatas
         else:
-            raise AssertionError("Please check data file path")
+            raise AssertionError("Please check testdata file path")

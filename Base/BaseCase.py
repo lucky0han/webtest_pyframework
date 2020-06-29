@@ -1,9 +1,11 @@
 # -*- coding:utf-8 -*-
-from Base import BasePage
+from base import basepage
 
 
 class BaseCase(object):
-    BROWSER_MANAGER = BasePage.BasePage.driver_manager
+    BROWSER_MANAGER = basepage.BasePage.__BROWSER_MANAGER__
+    __test__ = True
+
     def setup_class(self):
         pass
 

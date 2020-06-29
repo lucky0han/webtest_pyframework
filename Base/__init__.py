@@ -1,1 +1,1 @@
-from Base import BasePage
+from base import basepage
