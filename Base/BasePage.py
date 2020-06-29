@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import logging
+
 from selenium.common.exceptions import TimeoutException, NoSuchWindowException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
@@ -9,6 +11,8 @@ from utils import Screenshot
 import time
 import settings
 import configparser
+
+from utils.logtools import logger
 
 
 class BasePage(object):
@@ -93,17 +97,8 @@ class BasePage(object):
         message = "{} with locator '{}' not found.".format(by, locator)
         try:
             elements = WebDriverWait(driver, timeout).until(lambda x: x.find_elements(by, locator))
-        except TimeoutException as t:
-            message = message + "in {timeout}".format(timeout=timeout)
-            screen = getattr(t, 'screen', None)
-            stacktrace = getattr(t, 'stacktrace', None)
-            raise TimeoutException(message, screen, stacktrace)
-        except NoSuchWindowException as e:
-            screen = getattr(e, 'screen', None)
-            stacktrace = getattr(e, 'stacktrace', None)
-            raise NoSuchWindowException(message, screen, stacktrace)
         except Exception as e:
-            print(message)
+            logger(message, level=logging.ERROR)
             raise e
         else:
             return elements
@@ -129,17 +124,8 @@ class BasePage(object):
         message = "{} with locator '{}' not found.".format(by, locator)
         try:
             element = WebDriverWait(driver, timeout).until(lambda x: x.find_element(by, locator))
-        except TimeoutException as t:
-            message = message + "in {timeout}".format(timeout=timeout)
-            screen = getattr(t, 'screen', None)
-            stacktrace = getattr(t, 'stacktrace', None)
-            raise TimeoutException(message, screen, stacktrace)
-        except NoSuchWindowException as e:
-            screen = getattr(e, 'screen', None)
-            stacktrace = getattr(e, 'stacktrace', None)
-            raise NoSuchWindowException(message, screen, stacktrace)
         except Exception as e:
-            print(message)
+            logger(message, level=logging.ERROR)
             raise e
         else:
             return element
